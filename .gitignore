@@ -3,3 +3,5 @@ downloads/
 folder/
 venv/
 __pycache__/
+data/
+files/

@@ -1,6 +1,9 @@
 import json
+from load import driver_chrome
 
-def return_urls(titles,driver):
+
+def return_urls(titles):
+	driver, wait = driver_chrome('http://portal.inep.gov.br/microdados')
 
 	# Return selenium elements with name that is singular on the page
 	# If the name is not singular raise errors
@@ -31,5 +34,6 @@ def return_urls(titles,driver):
 		return zip_list
 
 	programs = single_elements_parents(elem_name='h4', text_list=titles, driver=driver)
-	with open('./files_urls.json', 'w') as outfile:
-		json.dump(get_zip_by_years(programs), outfile)
+	programs = get_zip_by_years(programs)
+	driver.close()
+	return programs
