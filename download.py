@@ -9,6 +9,7 @@ CHUNK_SIZE = 1000000 * 1024
 TIME = 2
 error = open('log.txt', 'w')
 
+
 # Download and write files into chunks assynchronosly using threads to unzip
 async def download_big_file(session, q_url, q_zip):
 	data_obj = await q_url.get()
@@ -28,14 +29,13 @@ async def download_big_file(session, q_url, q_zip):
 						# Using a queue to communicate to threads and unzip files
 						while q_zip.full():
 							sleep(TIME)
-						q_zip.put_nowait({'files': folder, 'filename': './downloads/%s' % filename})
+						q_zip.put_nowait({'folder_name': folder, 'filename': './downloads/%s' % filename})
 						unzip_class.start_thread()
 						break
-
 					await f.write(data)
 		except Exception as e:
 			await f.close()
-			print('%s %s\n' % (filename, str(e)))
+			print('%s %s' % (filename, str(e)))
 			error.write('filename: %s | %s\n' % (filename, str(e)))
 
 

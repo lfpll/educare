@@ -1,5 +1,4 @@
-import json
-from load import driver_chrome
+from load_selenium import driver_chrome
 
 
 def return_urls(titles):
