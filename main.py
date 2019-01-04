@@ -29,9 +29,9 @@ def switch(option):
 
     # Download the zip files
     # Recommended to use aria2c with --gen_down_list
-    if option == '--download':
-        zip_files = list(coll.find({'redownload':True},{'_id':0,'zip_url':1,'title':1,'year':1}))
-        async_dowload(zip_files)
+    # if option == '--download':
+    #     zip_files = list(coll.find({'redownload':True},{'_id':0,'zip_url':1,'title':1,'year':1}))
+    #     async_dowload(zip_files)
 
     # Validate if the zips were downloaded correctly
     if option == '--validate_zips' or option == '-vz':

@@ -5,7 +5,6 @@ import queue
 from time import sleep
 from handle_files import Unzip
 
-CHUNK_SIZE = 1000000 * 1024
 TIME = 2
 error = open('log.txt', 'w')
 
@@ -19,7 +18,6 @@ async def download_big_file(session, q_url, q_zip):
 	resume_header = {}
 
 	async with aiofiles.open(path_file, 'wb') as f:
-		print(url)
 		try:
 			# Get requests of the file
 			async with session.get(url,timeout=None,headers=resume_header) as response:

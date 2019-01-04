@@ -1,6 +1,6 @@
 from load_selenium import driver_chrome
 
-
+# Return all the urls of the inep page
 def return_urls(titles):
 	driver, wait = driver_chrome('http://portal.inep.gov.br/microdados')
 
