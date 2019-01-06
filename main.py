@@ -27,13 +27,6 @@ def switch(option):
         with open(DOWNLOAD_FOLDER+'downloads.txt','w') as file_hand:
             [file_hand.write(mdb_dic['zip_url']+'\n') for mdb_dic in list(coll.find({'redownload':True},{'_id':0,'zip_url':1}))]
 
-    # Download the zip files
-    # Recommended to use aria2c with --gen_down_list
-    # if option == '--download':
-    #     zip_files = list(coll.find({'redownload':True},{'_id':0,'zip_url':1,'title':1,'year':1}))
-    #     async_dowload(zip_files)
-
-    # Validate if the zips were downloaded correctly
     if option == '--validate_zips' or option == '-vz':
         # Return zip files problematic the downloads files
         folder_name = DOWNLOAD_FOLDER
