@@ -1,6 +1,5 @@
 import sys
 from save_urls import return_urls
-from download import async_dowload
 from handle_files import validate_zips,get_empty_folders,delete_folders,is_unziped,unzip_files_mdb
 from pymongo import MongoClient,UpdateOne
 import os
@@ -9,7 +8,7 @@ import re
 
 DOWNLOAD_FOLDER = './downloads/'
 FILES_FOLDER = './files/'
-KEY_TITLES = ['Censo Escolar', 'Encceja', 'Prova Brasil', 'ANA', 'Enem', 'Enem por Escola']
+KEY_TITLES = ['Censo Escolar']
 
 client = MongoClient()
 coll = client['educare']['download']
@@ -27,8 +26,9 @@ def switch(option):
         with open(DOWNLOAD_FOLDER+'downloads.txt','w') as file_hand:
             [file_hand.write(mdb_dic['zip_url']+'\n') for mdb_dic in list(coll.find({'redownload':True},{'_id':0,'zip_url':1}))]
 
+    # Return zip files problematic the downloads files
     if option == '--validate_zips' or option == '-vz':
-        # Return zip files problematic the downloads files
+
         folder_name = DOWNLOAD_FOLDER
 
         # Get and string of the zips that were wrongly downloaded
@@ -54,14 +54,13 @@ def switch(option):
         not_unzipped_ids = map(lambda mdb_dict:mdb_dict['_id'], not_unzipped_list)
 
         coll.update_many({'_id': {'$in':list(not_unzipped_ids)}}, {'$set': {'reunzip':True}})
-        print(list(not_unzipped_list))
 
     # Unzip files that weren't unzipped
     if option == '--unzip':
         # Generate the unzip list as mongodb expects
         unzip_list = [dict(folder_name=FILES_FOLDER+mdb_dic['title']+'/'+mdb_dic['year'],
               filename=DOWNLOAD_FOLDER+ mdb_dic['zip_url'][::-1].split('/')[0][::-1])
-             for mdb_dic in  coll.find({'reunzip':True},{'_id':0,'title':1,'year':1,'zip_url':1})]
+             for mdb_dic in  coll.find({'reunzip':True,"redownload":False},{'_id':0,'title':1,'year':1,'zip_url':1})]
         unzip_files_mdb(unzip_list)
 
 

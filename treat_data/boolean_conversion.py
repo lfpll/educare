@@ -25,7 +25,7 @@ class Define_type:
 			raise('File type is not attribute string '%string)
 
 
-# Return a list of sets with the unique values of each row in a csv
+# Return a list of sets with the unique values of each column in a csv
 def gen_distinct_rows(file_name):
 	with open(file_name,'r') as file:
 		reader = csv.reader(file, delimiter="|",quotechar='"')
@@ -39,10 +39,9 @@ def gen_distinct_rows(file_name):
 # Fuction that separate booleans and non booleans from a csv file
 def separate_booleans(rows_set:list):
 	'''
-	Input: List of lists (list of rows)
-	Output: two list of sets
-			- valid_bool: rows that can be transformed to booleans
-			- not_valid: rows that can't\shouldn't be transformed to booleans
+	Return two lists one with the valeus that are booleans others that are not
+	:param rows_set:
+	:return:
 	'''
 	rows_set = list(enumerate(rows_set))
 	valid_bool = []
@@ -59,6 +58,7 @@ def separate_booleans(rows_set:list):
 
 
 # TODO implement verification of types
+# TODO implement generation of data dictionarie
 # Converted enumerated set to boolean
 def convert_to_boolean(enum_sets):
 	'''
