@@ -80,7 +80,7 @@ def convert_to_boolean(enum_sets):
 			convert_ref.append((index,ref_dict))
 	return convert_ref
 
-def not_boolean_column(rows_set:list):
+def type_not_boolean_column(rows_set:list):
 	if all(isinstance(val,str) for val in rows_set):
 		return 'STRING'
 	if all(isinstance(val,int) for val in rows_set):
