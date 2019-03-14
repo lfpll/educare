@@ -25,9 +25,14 @@ class Define_type:
 			raise('File type is not attribute string '%string)
 
 
-# Return a list of sets with the unique values of each column in a csv
-def gen_distinct_rows(file_name):
-	with open(file_name,'r') as file:
+
+def gen_distinct_rows(csv_file_path):
+	'''
+	Reads a csv_file from the file_path and return the unique values of each column and the headers enumerated
+	:param csv_file_path: string of the csv file path
+	:return: a list of sets with the row values and a enumerated list of headers
+	'''
+	with open(csv_file_path, 'r') as file:
 		reader = csv.reader(file, delimiter="|",quotechar='"')
 		header = next(reader)
 		list_unq= [set() for _ in list(range(0, len(header)))]
@@ -39,23 +44,20 @@ def gen_distinct_rows(file_name):
 # Fuction that separate booleans and non booleans from a csv file
 def separate_booleans(rows_set:list):
 	'''
-	Return two lists one with the valeus that are booleans others that are not
-	:param rows_set:
-	:return:
+	Return two lists one with the values that are booleans others that are not
+	:param rows_set: a list of sets with the value of each row
+	:return: two lists one with the booleans other with other types
 	'''
 	rows_set = list(enumerate(rows_set))
 	valid_bool = []
 	not_valid= []
 	for tup_ind in rows_set:
 		set_val = tup_ind[1]
-		if len(set_val) > 2:
-			not_valid.append(tup_ind)
-		elif any(len(val)>1 for val in set_val):
-			not_valid.append(tup_ind)
-		else:
+		if all((isinstance(val,int) and (val == 0 or val == 1)) or isinstance(val,bool) or (isinstance(val,str) and (val.lower() == 'true' or val.lower() =='false')) for val in set_val):
 			valid_bool.append(tup_ind)
+		else:
+			not_valid.append(tup_ind)
 	return valid_bool, not_valid
-
 
 # TODO implement verification of types
 # TODO implement generation of data dictionarie
@@ -78,6 +80,13 @@ def convert_to_boolean(enum_sets):
 			convert_ref.append((index,ref_dict))
 	return convert_ref
 
+def not_boolean_column(rows_set:list):
+	if all(isinstance(val,str) for val in rows_set):
+		return 'STRING'
+	if all(isinstance(val,int) for val in rows_set):
+		return 'INTEGER'
+	if all(isinstance(val,float) for val in rows_set):
+		return 'FLOAT'
 
 # TODO implement verification of types
 # Transform values of a csv to boolean based on enumerated list
