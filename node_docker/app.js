@@ -14,17 +14,22 @@ router.get('/docentes', (ctx, next) => {
 	// SQL query creator
 	let sqlSelect = sql.select();
 	querySql = sqlSelect.from('docentes')
+
   let limit = 100
   const params = ctx.query
+
+  
   if ('fields' in params)
   {
   		select = params['fields']
   		querySql = querySql.select(select.split(','))
+
   		delete params['fields']
   }
   if ('limit' in params)
   {
   	limit = params['limit']
+
   	delete params['limit']
   }
   // Generate a query for the SQL

@@ -5,3 +5,5 @@ venv/
 __pycache__/
 data/
 files/
+node_modules/
+package-lock.json
