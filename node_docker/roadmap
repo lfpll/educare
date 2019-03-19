@@ -1,0 +1,25 @@
+Qual o problema ?
+
+1 - Servir os dados através de uma API fazendo um pipe entre o bigquery e o cliente
+
+Como vai funcionar?
+
+1 - Faz uma chamada http
+	1.1 - Query de chamada
+	1.2 - Cria uma query sql
+		- Erro se valores incorrentos
+		-
+2 - O código faz a query no BigQuery
+3 - Retorna para o usuário em formato de json ou tabular (lista de rows)
+	3.1 - Converte a chamada do bigquery
+	3.2 - Quebra em pedaços, paginação
+
+
+
+Primeiros paramêtros - POC
+
+1 - Série
+2 - Região
+3 - Genêro
+4 - Raça
+5 - Deficiência
