@@ -1,0 +1,31 @@
+1 - Os dados não tem padrão nas tabelas
+	1.1 - Eu já tratei só preciso relacionar mas tirei de escopo
+2 - API entregável - Novo Escopo
+	2.1 - Desenvolver API com 5-10 atributos de busca algo simples de chamada
+		2.1.1 - Tem algo no código te mostro depois o git
+	2.2 - Os dados do censo 2017 estao bigquery sem nenhum tratamento
+	2.3 - Api que faz um pipe entre bigquery e http call de acordo com a chamada do usuário
+		2.3.1 - sugestões aqui são bem vindas
+	2.4 - Depois disso tem que ver como fica os custos de operação pra ver se viável
+	2.5 - Fazer um desenho da arquitetura (?)
+	2.6 - Documentar
+3 - API Viável
+	3.1 - Modificar o schema da tabela para algo mais barato (isso já esta feito só falta modificar o schenma)
+	3.2 - Os dados já estão em um VM precisa  transferir pro cloud google storage (CGS)
+		3.2.1 - Tem que padronizar esse data lake
+		3.2.2 - Fazer uns triggers do gcs pro bigquery -> Por facilidade e conhecimento
+			3.2.2.1 - Não necessário mas quero brincar com isso
+	4.1 - Relacionar colunas que não existem na tabela 2017 e não foram achadas nos relacionamentos
+	4.2.1 - tem algumas que mudam de nome e ai tem que ser algo mais manual
+	4.3 - Upar tudo bigquery agregado
+4 - API - Pós viabilidade
+	4.1 - Dockerizar clound function e análise de custos
+	4.2 - Clusterizar o bigquery para melhorar a perfomance
+	4.3 - Melhorar perfomance geral?
+	4.4 - Custear
+	4.5 - Agregar valor com novas coisas
+
+
+Paralelo -
+Página de documentação da API
+Apresentando o projeto?
