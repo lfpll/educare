@@ -4,10 +4,14 @@ const sql = require('sql-query').Query();
 const Router = require('koa-router');
 const app = new Koa()
 const router = new Router();
+	
+//app.context.db = db();
+const numSearch = (num_sum,fields)  =>{}
+router.get('/docentes', (ctx, next) => {
 
+	// SQL query creator
 const create_query = function (params,table)
 {
-	
 	let sqlSelect = sql.select();
 	let querySql = sqlSelect.from('docentes')
 	let limit = 100
