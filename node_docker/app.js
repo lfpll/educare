@@ -6,7 +6,7 @@ const app = new Koa()
 const router = new Router();
 
 //app.context.db = db();
-
+const numSearch = (num_sum,fields)  =>{}
 router.get('/docentes', (ctx, next) => {
 
 	// SQL query creator
