@@ -4,9 +4,30 @@ const sql = require('sql-query').Query();
 const Router = require('koa-router');
 const app = new Koa()
 const router = new Router();
+const envVars = require('./envs')
 	
 //app.context.db = db();
-const numSearch = (num_sum,fields)  =>{}
+
+// Substitute the value through the really one used on the database
+const realCols = (fields,realObjVal)  =>{
+  // Return the real value on SQL
+  return fields.map((key) => realObjVal[key])
+}
+
+// Return search for fields that select variables by comma
+// Like food=meat,chicken,vegan
+// Returns {food:1,meat:1,vegan:1}
+const queryMultipleColumns = (fields,relatedColumnObj) =>
+{
+  const columnReals = realCols(fields,relatedColumnObj);
+  const queryObj = realCols.reduce((queryObj,value) => 
+    {
+      queryObj[value] = 1;
+      return queryObj;
+    },{})
+  return queryObj
+
+}
 
 // SQL query creator
 const create_query = function (params,table)
@@ -14,7 +35,9 @@ const create_query = function (params,table)
   let sqlSelect = sql.select();
   let querySql = sqlSelect.from('docentes')
   let limit = 100
-  // Fields selected on the query
+  console.log(params)
+
+  // Fields to be return in the query
   if ('fields' in params)
   {
     let select = params['fields']

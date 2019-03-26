@@ -22,7 +22,8 @@ def switch(option):
         coll.insert_many(list_urls)
 
     # Generate a list to be used on aria2c to download files
-    if option == '--gen_down_list':
+    if option == '--gen_down_list' or option == '-gdl':
+        print('generating download list')
         with open(DOWNLOAD_FOLDER+'downloads.txt','w') as file_hand:
             [file_hand.write(mdb_dic['zip_url']+'\n') for mdb_dic in list(coll.find({'redownload':True},{'_id':0,'zip_url':1}))]
 
