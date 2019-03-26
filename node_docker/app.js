@@ -20,7 +20,7 @@ const realCols = (fields,realObjVal)  =>{
 const queryMultipleColumns = (fields,relatedColumnObj) =>
 {
   const columnReals = realCols(fields,relatedColumnObj);
-  const queryObj = realCols.reduce((queryObj,value) => 
+  const queryObj = columnReals.reduce((queryObj,value) => 
     {
       queryObj[value] = 1;
       return queryObj;
