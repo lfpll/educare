@@ -50,10 +50,12 @@ const create_query = function (params,table)
     destination[key.toLowerCase()] = params[key];
     return destination;
   }, {});
+
+  // Creating the SQL query generator
   let sqlSelect = sql.select();
   let querySql = sqlSelect.from('docentes')
-  console.log('limit' in lowerParams)
-  // Fields to be return in the query
+
+  // Fields that will be returned
   if ('fields' in lowerParams)
   {
     let select = lowerParams['fields']
@@ -61,7 +63,7 @@ const create_query = function (params,table)
     delete lowerParams['fields']
   }
 
-  // Changing the limit
+  // Changing the limit of the SQL query
   let limit = 100
   if ('limit' in lowerParams)
   {
@@ -69,13 +71,13 @@ const create_query = function (params,table)
     delete lowerParams['limit']
   }
 
+  // Transform parameters of deficiencys
   let transf_params = lowerParams
   if ('defic' in lowerParams)
   {
     const deficSearch = queryMultipleColumns(lowerParams['defic'],envVars['defic'])
     delete lowerParams['defic']
     transf_params = {...lowerParams,...deficSearch}
-    console.log(transf_params)
   } 
 
 
