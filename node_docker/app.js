@@ -11,49 +11,76 @@ const envVars = require('./envs')
 // Substitute the value through the really one used on the database
 const realCols = (fields,realObjVal)  =>{
   // Return the real value on SQL
-  return fields.map((key) => realObjVal[key])
+  if (Array.isArray(fields))
+  {
+    return fields.map((key) => realObjVal[key])
+  }
+  return realObjVal[fields]
 }
 
 // Return search for fields that select variables by comma
 // Like food=meat,chicken,vegan
 // Returns {food:1,meat:1,vegan:1}
-const queryMultipleColumns = (fields,relatedColumnObj) =>
-{
-  const columnReals = realCols(fields,relatedColumnObj);
-  const queryObj = columnReals.reduce((queryObj,value) => 
+const queryMultipleColumns = (fields,envRelatObj) =>
+{ 
+  let queryObj = {}
+  if (!Array.isArray(fields))
+  {
+    const field = envRelatObj[fields]
+    queryObj[field] = 1
+  }
+  else
+  {
+  const columnReals = realCols(fields,envRelatObj);
+  queryObj = columnReals.reduce((queryObj,value) => 
     {
       queryObj[value] = 1;
       return queryObj;
     },{})
+  }
   return queryObj
-
 }
 
 // SQL query creator
 const create_query = function (params,table)
-{
+{ 
+  // Transforming params to key with lower case
+  const lowerParams = Object.keys(params)
+  .reduce((destination, key) => {
+    destination[key.toLowerCase()] = params[key];
+    return destination;
+  }, {});
   let sqlSelect = sql.select();
   let querySql = sqlSelect.from('docentes')
-  let limit = 100
-  console.log(params)
-
+  console.log('limit' in lowerParams)
   // Fields to be return in the query
-  if ('fields' in params)
+  if ('fields' in lowerParams)
   {
-    let select = params['fields']
+    let select = lowerParams['fields']
     querySql = querySql.select(select.split(','))
-    delete params['fields']
+    delete lowerParams['fields']
   }
 
   // Changing the limit
-  if ('limit' in params)
+  let limit = 100
+  if ('limit' in lowerParams)
   {
+    if (parseInt(lowerParams['limit']) < 100) limit = parseInt(lowerParams['limit'])
+    delete lowerParams['limit']
+  }
 
-    limit = parseInt(params['limit'])
-    if (limit > 100) limit =100
-    delete params['limit']
+  let transf_params = lowerParams
+  if ('defic' in lowerParams)
+  {
+    const deficSearch = queryMultipleColumns(lowerParams['defic'],envVars['defic'])
+    delete lowerParams['defic']
+    transf_params = {...lowerParams,...deficSearch}
+    console.log(transf_params)
   } 
-  return querySql.where(params).limit(limit).build()
+
+
+
+  return querySql.where(transf_params).limit(limit).build()
 }
 
 
