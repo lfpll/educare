@@ -1,0 +1,21 @@
+{
+  "name": "node_docker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "koa": "^2.7.0",
+    "koa-router": "^7.4.0",
+    "sql-query": "^0.1.27",
+    "streaming-json-stringify": "^3.1.0"
+  },
+  "devDependencies": {
+    "jest": "^24.5.0",
+    "rewire": "^4.0.1"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC"
+}
