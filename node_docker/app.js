@@ -18,9 +18,9 @@ const realCols = (fields,realObjVal)  =>{
   return realObjVal[fields]
 }
 
-// Return search for fields that select variables by comma
-// Like food=meat,chicken,vegan
-// Returns {food:1,meat:1,vegan:1}
+// Transform fields passed to the column name queries on SQL
+// Like meat,chicken,vegan
+// Returns {chicken_food:1,cow_meat:1,vegan_food:1}
 const queryMultipleColumns = (fields,envRelatObj) =>
 { 
   let queryObj = {}
@@ -41,10 +41,11 @@ const queryMultipleColumns = (fields,envRelatObj) =>
   return queryObj
 }
 
-// SQL query creator
-const create_query = function (params,table)
+// SQL query creator from api querystring object
+const createQuery = function (params,table)
 { 
   // Transforming params to key with lower case
+  // TODO fix bug where query deletes same keys with different case
   const lowerParams = Object.keys(params)
   .reduce((destination, key) => {
     destination[key.toLowerCase()] = params[key];
@@ -53,9 +54,9 @@ const create_query = function (params,table)
 
   // Creating the SQL query generator
   let sqlSelect = sql.select();
-  let querySql = sqlSelect.from('docentes')
+  let querySql = sqlSelect.from(table)
 
-  // Fields that will be returned
+  // Fields that will selected
   if ('fields' in lowerParams)
   {
     let select = lowerParams['fields']
