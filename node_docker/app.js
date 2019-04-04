@@ -1,3 +1,4 @@
+
 const Koa = require('koa')
 const JSONStream = require('streaming-json-stringify');
 const sql = require('sql-query').Query();
@@ -65,7 +66,6 @@ const queryMultipleColumns = (fields,envRelatObj) =>
 const createQuery =  (params,table) =>
 { 
   // Transforming params to key with lower case
-  // TODO fix bug where query deletes same keys with different case
   const lowerParams = Object.keys(params)
   .reduce((destination, key) => {
     destination[key.toLowerCase()] = params[key];
@@ -74,9 +74,9 @@ const createQuery =  (params,table) =>
 
   // Creating the SQL query generator
   let sqlSelect = sql.select();
-  let querySql = sqlSelect.from(table)
+  let querySql = sqlSelect.from('docentes')
 
-  // Fields that will selected
+  // Fields that will be returned
   if ('fields' in lowerParams)
   {
     let select = lowerParams['fields']
