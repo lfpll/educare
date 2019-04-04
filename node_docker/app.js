@@ -8,7 +8,7 @@ const envVars = require('./envs')
 	
 //app.context.db = db();
 
-// Substitute the value through the really one used on the database
+// Replace values on a list based on a object
 const realCols = (fields,realObjVal)  =>{
   // Return the real value on SQL
   if (Array.isArray(fields))
@@ -16,6 +16,26 @@ const realCols = (fields,realObjVal)  =>{
     return fields.map((key) => realObjVal[key])
   }
   return realObjVal[fields]
+}
+
+// Replace the values of the key parameters in the query with the real ones in bigquery
+const replaceObjectKeys = (queryObj,bigqueryKeys) =>
+{
+  const newObject = Object.keys(queryObj)
+  .reduce((destination, key) => {
+    if (key in bigqueryKeys)
+    {
+      destination[bigqueryKeys[key]] = queryObj[key];
+    }
+    else{
+      destination[key] = queryObj[key]
+    }
+    
+    return destination;
+  }, {});
+
+  
+  return newObject
 }
 
 // Transform fields passed to the column name queries on SQL
@@ -42,7 +62,7 @@ const queryMultipleColumns = (fields,envRelatObj) =>
 }
 
 // SQL query creator from api querystring object
-const createQuery = function (params,table)
+const createQuery =  (params,table) =>
 { 
   // Transforming params to key with lower case
   // TODO fix bug where query deletes same keys with different case
@@ -81,22 +101,25 @@ const createQuery = function (params,table)
     transf_params = {...lowerParams,...deficSearch}
   } 
 
-
-
   return querySql.where(transf_params).limit(limit).build()
 }
-
 
 //app.context.db = db();
 router.get('/docentes', (ctx, next) => {
 
-
-	// SQL query creator
   const params = ctx.query
+  // Array with the params that are wrongly used in the querystring
+  const incorrectVals = Object.keys(queryParams).filter((queryVal) => {return !(queryVal in acceptecValues)})
 
-  // Generate a query for the SQL
- 	let thisSql =  create_query(params,table='docentes')
- 	console.log(thisSql)
+  if (incorrectVals.length  == 0)
+  {    
+    let thisSql =  createQuery(params,table='docentes')
+    ctx.body = thisSql
+  }
+  else
+  {
+    ctx.body = incorrectVals.join(', ') + "can't be used on search"
+  }
 });
 
 app.use(router.routes()).use(router.allowedMethods());

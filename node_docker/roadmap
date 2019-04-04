@@ -5,11 +5,11 @@ Qual o problema ?
 Como vai funcionar?
 
 1 - Faz uma chamada http
-	1.1 - Query de chamada
-	1.2 - Cria uma query sql
-		- Erro se valores incorrentos
-		-
+	1.1 - Query de chamada - OK
+	1.2 - Cria uma query sql - OK
+		- Erro se valores incorrentos 
 2 - O código faz a query no BigQuery
+	2.1 - Voa chama de api
 3 - Retorna para o usuário em formato de json ou tabular (lista de rows)
 	3.1 - Converte a chamada do bigquery
 	3.2 - Quebra em pedaços, paginação

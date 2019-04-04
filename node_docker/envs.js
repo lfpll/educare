@@ -1,5 +1,14 @@
 module.exports =
 {
+	// Name of the columns referenced on bigtable
+	'name_columns':
+	{
+		'sexo':'TP_SEXO',
+		'raca':'TP_COR_RACA',
+		'escolaridade':'TP_ESCOLARIDADE'
+
+	},
+	'vals_correct':['defic','sexo','escolaridade','raca'],
 	'defic': {
 		'CE':'IN_CEGUEIRA',
 		'BV':'IN_BAIXA_VISAO',
@@ -21,7 +30,7 @@ module.exports =
 		'EC':3,
 		'SC':4		
 	},
-	'raça':
+	'raca':
 	{
 		'ND':0,
 		'BA':1,
