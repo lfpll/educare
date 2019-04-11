@@ -1,8 +1,8 @@
 const Koa = require('koa');
 const Router = require('koa-router');
-const sql = require('sql-query').Query();
 const app = new Koa();
 const router = new Router();
+const sql = require('sql-query').Query();
 const envVars = require('./envs');
 const {BigQuery} = require('@google-cloud/bigquery');
 
@@ -139,40 +139,35 @@ const queryBigQuery =  (query_string) =>
     return query(query_string);
 }
 //app.context.db = db();
-router.get('/docentes', async (ctx, next) => {
+router.get('/docentes', async (ctx) => {
 
   const params = ctx.query
 
   // Array with the params that are wrongly used in the querystring
-  const incorrectVals = Object.keys(params).filter((queryVal) => {return (envVars.validInput.indexOf(queryVal.toLowerCase()) <= -1)})
+  const incorrectVals = Object.keys(params).filter((queryVal) => 
+  {
+    return (envVars.validInput.indexOf(queryVal.toLowerCase()) <= -1)
+  })
   
   // Check if there are values not listed on the querystring
   if (incorrectVals.length  == 0)
   {    
-    const {BigQuery} = require('@google-cloud/bigquery');
-    async function query(query_string) {
-      // Queries the Shakespeare dataset with the cache disabled.
-      // Create a client
+    const query =  (query_string) => {
       const bigqueryClient = new BigQuery();
   
       const options = {
         query: query_string,
-        // Location must match that of the dataset(s) referenced in the query.
         location: 'US',
       };
   
       // Run the query as a job
-      const [job] = await bigqueryClient.createQueryJob(options);
-      console.log(`Job ${job.id} started.`);
-  
+      const [job] = await bigqueryClient.createQueryJob(options);  
       // Wait for the query to finish
       const [rows] = await job.getQueryResults();
-  
       // Print the results
       return rows;
     }
     const thisSql =  createSelectQuery(params,'educare-226818.CENSO.Docente_2017')
-    console.log(thisSql)
     const response = await queryBigQuery(thisSql)
     ctx.body = response
   }
