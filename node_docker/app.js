@@ -139,7 +139,7 @@ const queryBigQuery =  (query_string) =>
     return query(query_string);
 }
 //app.context.db = db();
-router.get('/docentes', async (ctx) => {
+router.get('/docentes', async (ctx,next) => {
 
   const params = ctx.query
 
@@ -152,7 +152,7 @@ router.get('/docentes', async (ctx) => {
   // Check if there are values not listed on the querystring
   if (incorrectVals.length  == 0)
   {    
-    const query =  (query_string) => {
+    const query =  async (query_string) => {
       const bigqueryClient = new BigQuery();
   
       const options = {
