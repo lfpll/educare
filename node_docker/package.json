@@ -4,14 +4,15 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
+    "@google-cloud/bigquery": "^3.0.0",
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
-    "sql-query": "^0.1.27",
-    "streaming-json-stringify": "^3.1.0"
+    "sql-query": "^0.1.27"
   },
   "devDependencies": {
     "jest": "^24.5.0",
-    "rewire": "^4.0.1"
+    "rewire": "^4.0.1",
+    "sqlite3": "^4.0.6"
   },
   "scripts": {
     "test": "jest"

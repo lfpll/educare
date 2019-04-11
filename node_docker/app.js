@@ -1,120 +1,180 @@
-
-const Koa = require('koa')
-const JSONStream = require('streaming-json-stringify');
-const sql = require('sql-query').Query();
+const Koa = require('koa');
 const Router = require('koa-router');
-const app = new Koa()
+const sql = require('sql-query').Query();
+const app = new Koa();
 const router = new Router();
-const envVars = require('./envs')
-	
+const envVars = require('./envs');
+const {BigQuery} = require('@google-cloud/bigquery');
+
 //app.context.db = db();
 
 // Replace values on a list based on a object
-const realCols = (fields,realObjVal)  =>{
+const replaceVals = (fields,realObjVal)  =>{
   // Return the real value on SQL
   if (Array.isArray(fields))
   {
-    return fields.map((key) => realObjVal[key])
+    return fields.map((key) => realObjVal[key.toLowerCase()]);
   }
-  return realObjVal[fields]
-}
-
-// Replace the values of the key parameters in the query with the real ones in bigquery
-const replaceObjectKeys = (queryObj,bigqueryKeys) =>
-{
-  const newObject = Object.keys(queryObj)
-  .reduce((destination, key) => {
-    if (key in bigqueryKeys)
-    {
-      destination[bigqueryKeys[key]] = queryObj[key];
-    }
-    else{
-      destination[key] = queryObj[key]
-    }
-    
-    return destination;
-  }, {});
-
-  
-  return newObject
+  return realObjVal[fields];
 }
 
 // Transform fields passed to the column name queries on SQL
 // Like meat,chicken,vegan
 // Returns {chicken_food:1,cow_meat:1,vegan_food:1}
-const queryMultipleColumns = (fields,envRelatObj) =>
-{ 
-  let queryObj = {}
+const queryMultipleColumns =(fields,envRelatObj) =>{ 
+  let queryObj = {};
+
+  // Check if it a single value
   if (!Array.isArray(fields))
   {
-    const field = envRelatObj[fields]
-    queryObj[field] = 1
+    const field = envRelatObj[fields.toLowerCase()];
+    queryObj[field] = 1;
   }
   else
   {
-  const columnReals = realCols(fields,envRelatObj);
+  const columnReals = replaceVals(fields,envRelatObj);
   queryObj = columnReals.reduce((queryObj,value) => 
     {
       queryObj[value] = 1;
       return queryObj;
     },{})
   }
-  return queryObj
+  return queryObj;
 }
 
 // SQL query creator from api querystring object
-const createQuery =  (params,table) =>
+const createSelectQuery =  (params,table) =>
 { 
-  // Transforming params to key with lower case
-  const lowerParams = Object.keys(params)
+  const referenceColumns = envVars['realNameColumns']
+  // Transforming query params to lower case
+  const lowerParams = Object.keys(params).reduce((dest, key) => {
+  dest[key.toLowerCase()] = params[key]
+  return dest
+  }, {});
+  // Creating the SQL query generator
+  let querySql;
+
+  // Fields that will selected by the sql query
+  let fields 
+  if (typeof(lowerParams['fields']) == 'undefined' || lowerParams['fields'].length >10)
+  {
+    fields = ['sexo','raca','escolaridade']
+  }
+  else if ('fields' in lowerParams)
+  {
+    if (Array.isArray(lowerParams['fields'])){
+      fields = lowerParams['fields'].map((val) => val.toLowerCase()); 
+    }
+    else{
+      fields = lowerParams['fields'].toLowerCase()
+    }
+
+    delete lowerParams['fields'];
+  }
+  const select = replaceVals(fields,referenceColumns);
+  querySql = sql.select().from(table).select(select);
+
+  // Changing the limit of the SQL query
+  let limit = 100;
+  if ('limit' in lowerParams)
+  {
+    if (parseInt(lowerParams['limit']) < 100) limit = parseInt(lowerParams['limit']);
+    delete lowerParams['limit'];
+  }
+  
+  // Transform parameters of deficiencys into booleans that can relate on the SQL table
+  // TODO implement a beter way if transParams
+  let transfParams = lowerParams
+  if ('defic' in lowerParams)
+  {
+    const deficSearch = queryMultipleColumns(lowerParams['defic'],envVars['defic']);
+    delete lowerParams['defic'];
+    transfParams = {...deficSearch,...lowerParams};
+  } 
+  // Replace the values on the query string for ones that are related to the SQL table  
+  transfParams = Object.keys(transfParams)
   .reduce((destination, key) => {
-    destination[key.toLowerCase()] = params[key];
+    if (key in referenceColumns)
+    {
+      destination[referenceColumns[key]] = replaceVals(transfParams[key],envVars[key]);
+    }
+    else{
+      destination[key] = transfParams[key]
+    }
     return destination;
   }, {});
 
-  // Creating the SQL query generator
-  let sqlSelect = sql.select();
-  let querySql = sqlSelect.from('docentes')
-
-  // Fields that will be returned
-  if ('fields' in lowerParams)
-  {
-    let select = lowerParams['fields']
-    querySql = querySql.select(select.split(','))
-    delete lowerParams['fields']
-  }
-
-  // Changing the limit of the SQL query
-  let limit = 100
-  if ('limit' in lowerParams)
-  {
-    if (parseInt(lowerParams['limit']) < 100) limit = parseInt(lowerParams['limit'])
-    delete lowerParams['limit']
-  }
-
-  // Transform parameters of deficiencys
-  let transf_params = lowerParams
-  if ('defic' in lowerParams)
-  {
-    const deficSearch = queryMultipleColumns(lowerParams['defic'],envVars['defic'])
-    delete lowerParams['defic']
-    transf_params = {...lowerParams,...deficSearch}
-  } 
-
-  return querySql.where(transf_params).limit(limit).build()
+  // TODO Fix this if with undefined, kind of ugly
+  // Returns the data as a SQL query if there is a deficiency or not
+  return querySql.where(transfParams).limit(limit).build();
 }
+const queryBigQuery =  (query_string) =>
+{
 
+    // [START bigquery_query]
+    // Import the Google Cloud client library
+    const {BigQuery} = require('@google-cloud/bigquery');
+  
+    async function query(query_string) {
+      // Queries the Shakespeare dataset with the cache disabled.
+      // Create a client
+      const bigqueryClient = new BigQuery();
+  
+      const options = {
+        query: query_string,
+        // Location must match that of the dataset(s) referenced in the query.
+        location: 'US',
+      };
+  
+      // Run the query as a job
+      const [job] = await bigqueryClient.createQueryJob(options);
+      console.log(`Job ${job.id} started.`);
+  
+      // Wait for the query to finish
+      const [rows] = await job.getQueryResults();
+  
+      // Print the results
+      return rows;
+    }
+    return query(query_string);
+}
 //app.context.db = db();
-router.get('/docentes', (ctx, next) => {
+router.get('/docentes', async (ctx, next) => {
 
   const params = ctx.query
-  // Array with the params that are wrongly used in the querystring
-  const incorrectVals = Object.keys(queryParams).filter((queryVal) => {return !(queryVal in acceptecValues)})
 
+  // Array with the params that are wrongly used in the querystring
+  const incorrectVals = Object.keys(params).filter((queryVal) => {return (envVars.validInput.indexOf(queryVal.toLowerCase()) <= -1)})
+  
+  // Check if there are values not listed on the querystring
   if (incorrectVals.length  == 0)
   {    
-    let thisSql =  createQuery(params,table='docentes')
-    ctx.body = thisSql
+    const {BigQuery} = require('@google-cloud/bigquery');
+    async function query(query_string) {
+      // Queries the Shakespeare dataset with the cache disabled.
+      // Create a client
+      const bigqueryClient = new BigQuery();
+  
+      const options = {
+        query: query_string,
+        // Location must match that of the dataset(s) referenced in the query.
+        location: 'US',
+      };
+  
+      // Run the query as a job
+      const [job] = await bigqueryClient.createQueryJob(options);
+      console.log(`Job ${job.id} started.`);
+  
+      // Wait for the query to finish
+      const [rows] = await job.getQueryResults();
+  
+      // Print the results
+      return rows;
+    }
+    const thisSql =  createSelectQuery(params,'educare-226818.CENSO.Docente_2017')
+    console.log(thisSql)
+    const response = await queryBigQuery(thisSql)
+    ctx.body = response
   }
   else
   {
@@ -123,4 +183,5 @@ router.get('/docentes', (ctx, next) => {
 });
 
 app.use(router.routes()).use(router.allowedMethods());
-app.listen(3000);
+const PORT = process.env.PORT || 8080;
+app.listen(PORT)

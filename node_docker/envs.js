@@ -1,42 +1,42 @@
 module.exports =
 {
 	// Name of the columns referenced on bigtable
-	'name_columns':
+	'realNameColumns':
 	{
 		'sexo':'TP_SEXO',
 		'raca':'TP_COR_RACA',
-		'escolaridade':'TP_ESCOLARIDADE'
-
+		'escolaridade':'TP_ESCOLARIDADE',
+		'cod':'CO_PESSOA_FISICA'
 	},
-	'vals_correct':['defic','sexo','escolaridade','raca'],
+	'validInput':['defic','sexo','escolaridade','raca','fields','limit'],
 	'defic': {
-		'CE':'IN_CEGUEIRA',
-		'BV':'IN_BAIXA_VISAO',
-		'SU':'IN_SURDEZ',
-		'DA':'IN_DEF_AUDITIVA',
-		'SC':'IN_SURDOCEGUEIRA',
-		'FI':'IN_DEF_FISICA',
-		'IN':'IN_DEF_INTELECTUAL',
-		'DM':'IN_DEF_MULTIPLA',
+		'ce':'IN_CEGUEIRA',
+		'bv':'IN_BAIXA_VISAO',
+		'su':'IN_SURDEZ',
+		'da':'IN_DEF_AUDITIVA',
+		'sc':'IN_SURDOCEGUEIRA',
+		'fi':'IN_DEF_FISICA',
+		'in':'IN_DEF_INTELECTUAL',
+		'dm':'IN_DEF_MULTIPLA',
 	},
 	'sexo': {
-		'M':1,
-		'F':2
+		'm':1,
+		'f':2
 	},
 	'escolaridade':
 	{
-		'FI':1,
-		'FC':2,
-		'EC':3,
-		'SC':4		
+		'fi':1, // Fundamental incompleto
+		'fc':2, // Fundamental Completo
+		'ec':3, // Ensino médio completo
+		'sc':4	// Superior Completo	
 	},
 	'raca':
 	{
-		'ND':0,
-		'BA':1,
-		'PR':2,
-		'PA':3,
-		'AM':4,
-		'IN':5
+		'no':0, // Nao Declarado
+		'bo':1, // Branco
+		'po':2, // Preto
+		'pa':3, // Pardo
+		'ao':4, // Amarelo
+		'ia':5  // Indigena
 	}
 }
