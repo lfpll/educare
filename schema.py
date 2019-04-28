@@ -24,7 +24,14 @@ class Define_type:
 		else:
 			raise('File type is not attribute string '%string)
 
-
+#
+def treat_dataframe(csv_file_path,delimiter='|'):
+	with open(csv_file_path,'r') as csv_file_in:
+		csv_in = csv.reader_dict(csv_file_in,delimiter=delimiter)
+		with open(csv_file_path.replace('.csv','_tmp.csv'),'w') as csv_file_out:
+			csv_out = csv.writer(csv_file_out.replace,delimiter=delimiter)
+			# add method to replace values	
+			[csv.writerow(next(csv_in) for _ in csv_in]
 
 def gen_distinct_rows(csv_file_path):
 	'''

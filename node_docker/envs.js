@@ -10,18 +10,18 @@ module.exports =
 	},
 	'validInput':['defic','sexo','escolaridade','raca','fields','limit'],
 	'defic': {
-		'ce':'IN_CEGUEIRA',
-		'bv':'IN_BAIXA_VISAO',
-		'su':'IN_SURDEZ',
-		'da':'IN_DEF_AUDITIVA',
+		'ce':'IN_CEGUEIRA', // Cego
+		'bv':'IN_BAIXA_VISAO', // Baixa Visão
+		'su':'IN_SURDEZ', // Surdo
+		'da':'IN_DEF_AUDITIVA', // Deficiencia auditiva
 		'sc':'IN_SURDOCEGUEIRA',
-		'fi':'IN_DEF_FISICA',
+		'fi':'IN_DEF_FISICA', // Deficiencia Fisisca
 		'in':'IN_DEF_INTELECTUAL',
 		'dm':'IN_DEF_MULTIPLA',
 	},
 	'sexo': {
-		'm':1,
-		'f':2
+		'm':'1',
+		'f':'2'
 	},
 	'escolaridade':
 	{
