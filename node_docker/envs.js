@@ -8,6 +8,7 @@ module.exports =
 		'escolaridade':'TP_ESCOLARIDADE',
 		'cod':'CO_PESSOA_FISICA'
 	},
+	// Valid columns that exist on the API
 	'validInput':['defic','sexo','escolaridade','raca','fields','limit'],
 	'defic': {
 		'ce':'IN_CEGUEIRA', // Cego

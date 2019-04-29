@@ -108,12 +108,12 @@ const createSelectQuery =  (params,table) =>
   // Returns the data as a SQL query if there is a deficiency or not
   return querySql.where(transfParams).limit(limit).build();
 }
+
 const queryBigQuery =  (query_string) =>
 {
 
     // [START bigquery_query]
     // Import the Google Cloud client library
-    const {BigQuery} = require('@google-cloud/bigquery');
   
     async function query(query_string) {
       // Queries the Shakespeare dataset with the cache disabled.
