@@ -4,14 +4,13 @@ from handle_files import validate_zips,get_empty_folders,delete_folders,is_unzip
 from pymongo import MongoClient,UpdateOne
 import os
 import re
+import json
 
-
-DOWNLOAD_FOLDER = './downloads/'
+DOWNLOAD_FOLDER = './'
 FILES_FOLDER = './files/'
 KEY_TITLES = ['Censo Escolar']
 
-client = MongoClient()
-coll = client['educare']['download']
+
 
 
 def switch(option):
@@ -19,13 +18,14 @@ def switch(option):
     # Save the urls from the web page of INEP
     if option == '--save_urls' or option == '-s_u':
         list_urls = return_urls(KEY_TITLES)
-        coll.insert_many(list_urls)
-
+        json.dump(list_urls,open("./downloads_list.json","w"))
     # Generate a list to be used on aria2c to download files
     if option == '--gen_down_list' or option == '-gdl':
         print('generating download list')
         with open(DOWNLOAD_FOLDER+'downloads.txt','w') as file_hand:
-            [file_hand.write(mdb_dic['zip_url']+'\n') for mdb_dic in list(coll.find({'redownload':True},{'_id':0,'zip_url':1}))]
+            json_schema = json.load(open("./downloads_list.json"))
+            for objc in json_schema:
+                file_hand.write(objc['zip_url']+'\n')
 
     # Return zip files problematic the downloads files
     if option == '--validate_zips' or option == '-vz':
